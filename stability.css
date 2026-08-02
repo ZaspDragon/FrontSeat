@@ -1,0 +1,19 @@
+html,body{max-width:100%;overflow-x:hidden}.frontseat-logout{margin-left:auto;white-space:nowrap}.startup-recovery{min-height:100dvh;display:grid;place-content:center;gap:14px;padding:28px;text-align:center}.startup-recovery h1{margin:0;font-size:clamp(1.7rem,7vw,2.7rem)}.startup-recovery p{max-width:520px;line-height:1.5}.startup-recovery button{min-height:50px;padding:12px 18px;border-radius:14px;font-weight:800;background:#21352c;color:#fff;border:0}
+@media(max-width:760px){
+ body{min-height:100dvh}
+ .topbar{position:sticky;top:0;z-index:40;padding-top:max(8px,env(safe-area-inset-top));overflow:visible}
+ .toprow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+ .brand{min-width:0;flex:1 1 160px}.brand span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ .metrics{order:3;width:100%;display:flex;overflow-x:auto;gap:6px;padding-bottom:2px;scrollbar-width:none}.metrics::-webkit-scrollbar{display:none}.metric{flex:0 0 auto}
+ .nav{display:flex;overflow-x:auto;gap:6px;padding-bottom:4px;scrollbar-width:none}.nav::-webkit-scrollbar{display:none}.nav button{flex:0 0 auto}
+ .main{padding:10px;min-height:calc(100dvh - 150px)}
+ .host-grid{display:grid!important;grid-template-columns:1fr!important;gap:10px!important}
+ .left-panel,.right-panel{display:block!important}.panel{min-width:0!important}
+ .floor-wrap{overflow:auto!important;-webkit-overflow-scrolling:touch}.floor{min-width:760px!important}
+ .fab{right:14px!important;bottom:calc(18px + env(safe-area-inset-bottom))!important;max-width:calc(100vw - 28px)!important}
+ .layout-editor-launch{right:12px!important;bottom:calc(78px + env(safe-area-inset-bottom))!important;max-width:calc(100vw - 24px)!important}
+ .modal{width:calc(100vw - 20px)!important;max-height:88dvh!important}.modal-body{overflow:auto!important}
+ .settings-grid,.cards{grid-template-columns:1fr!important}
+ .frontseat-logout{min-height:40px;padding:8px 12px}
+}
+@media(max-width:420px){.brandmark{width:36px;height:36px}.toprow>.small{padding:7px 10px}.metric{font-size:.76rem}.main{padding:8px}.panel-head{align-items:flex-start;gap:8px;flex-wrap:wrap}.party-actions{display:grid!important;grid-template-columns:1fr 1fr}.party-actions button{width:100%}}
