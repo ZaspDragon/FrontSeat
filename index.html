@@ -1,11 +1,47 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#6f452c"><meta name="description" content="FrontSeat commercial restaurant seating, waitlist, reservation and floor planning"><meta name="apple-mobile-web-app-capable" content="yes"><link rel="manifest" href="manifest.webmanifest"><link rel="stylesheet" href="v2/app.css?v=20260802-3"><title>FrontSeat Restaurant Operations</title></head><body><div id="app"><div class="boot">Loading FrontSeat…</div></div><noscript>FrontSeat requires JavaScript.</noscript><script>
-(function(){
- const root=document.getElementById('app');
- const show=function(title,message){root.innerHTML='<div class="fatal"><div><h1>'+title+'</h1><p>'+message+'</p><button id="fs-reload">Reload</button><button id="fs-repair">Repair app cache</button></div></div>';document.getElementById('fs-reload').onclick=function(){location.reload()};document.getElementById('fs-repair').onclick=async function(){try{if('serviceWorker'in navigator){const regs=await navigator.serviceWorker.getRegistrations();await Promise.all(regs.map(function(r){return r.unregister()}))}if(window.caches){const keys=await caches.keys();await Promise.all(keys.map(function(k){return caches.delete(k)}))}}finally{location.href=location.pathname+'?repair='+Date.now()}}};
- window.addEventListener('error',function(e){if(!window.__frontseatBooted)show('FrontSeat failed to load',e.message||'A startup script failed.')});
- window.addEventListener('unhandledrejection',function(e){if(!window.__frontseatBooted)show('FrontSeat failed to load',String(e.reason&&e.reason.message||e.reason||'A startup promise failed.'))});
- const stamp=Date.now();
- import('./v2/main.js?v='+stamp).catch(function(err){console.error(err);show('FrontSeat module failed to load',String(err&&err.message||err))});
- setTimeout(function(){if(!window.__frontseatBooted&&!window.__frontseatBootFailed)show('FrontSeat startup timed out','Safari did not finish loading the application files. Tap Repair app cache, then reopen FrontSeat.')},10000);
-})();
-</script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#6b3e26" />
+  <meta name="description" content="FrontSeat restaurant host, waitlist, reservation, and seating management" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="styles.css?v=stable-7" />
+  <link rel="stylesheet" href="commercial.css?v=stable-7" />
+  <link rel="stylesheet" href="layout-editor.css?v=stable-7" />
+  <link rel="stylesheet" href="layout-mobile-controls.css?v=stable-7" />
+  <title>FrontSeat Restaurant Operations</title>
+</head>
+<body>
+  <div id="app"></div>
+  <script>
+    (function retireV2() {
+      if (!('serviceWorker' in navigator)) return;
+      navigator.serviceWorker.getRegistrations().then(function (registrations) {
+        return Promise.all(registrations.map(function (registration) {
+          var url = '';
+          if (registration.active) url = registration.active.scriptURL || '';
+          else if (registration.waiting) url = registration.waiting.scriptURL || '';
+          else if (registration.installing) url = registration.installing.scriptURL || '';
+          return url.indexOf('/sw-v2.js') !== -1 ? registration.unregister() : Promise.resolve(false);
+        }));
+      }).catch(function () {});
+      if (window.caches) {
+        caches.keys().then(function (keys) {
+          return Promise.all(keys.filter(function (key) {
+            return key.indexOf('frontseat-v2') !== -1;
+          }).map(function (key) {
+            return caches.delete(key);
+          }));
+        }).catch(function () {});
+      }
+    })();
+  </script>
+  <script src="app.js?v=stable-7" defer></script>
+  <script src="commercial.js?v=stable-7" defer></script>
+  <script src="layout-editor.js?v=stable-7" defer></script>
+  <script src="layout-mobile-controls.js?v=stable-7" defer></script>
+</body>
+</html>
