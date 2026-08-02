@@ -1,1 +1,38 @@
-const VERSION='frontseat-v2-2026-08-02-3';const CORE=['./','index.html','v2/app.css','v2/main.js','v2/storage.js','v2/store.js','v2/auth.js','v2/sync.js','v2/ui.js','v2/floorplan.js','v2/waitlist.js','v2/reservations.js','v2/seating.js','v2/analytics.js','v2/settings.js','manifest.webmanifest'];self.addEventListener('install',e=>e.waitUntil(caches.open(VERSION).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting())));self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==VERSION).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;const u=new URL(e.request.url),code=/\.(?:html|js|css)$/.test(u.pathname)||e.request.mode==='navigate';if(code){e.respondWith(fetch(e.request,{cache:'no-store'}).then(r=>{const c=r.clone();caches.open(VERSION).then(x=>x.put(e.request,c));return r}).catch(()=>caches.match(e.request).then(r=>r||caches.match('./'))));return}e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(n=>{const c=n.clone();caches.open(VERSION).then(x=>x.put(e.request,c));return n})))})
+/* Emergency retirement worker for the abandoned FrontSeat v2 service worker. */
+self.addEventListener('install', function () {
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', function (event) {
+  event.waitUntil((async function () {
+    try {
+      const keys = await caches.keys();
+      await Promise.all(keys.filter(function (key) {
+        return key.indexOf('frontseat-v2') !== -1;
+      }).map(function (key) {
+        return caches.delete(key);
+      }));
+    } catch (error) {
+      console.warn('FrontSeat v2 cache cleanup failed', error);
+    }
+
+    try {
+      await self.registration.unregister();
+    } catch (error) {
+      console.warn('FrontSeat v2 worker unregister failed', error);
+    }
+
+    const clients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    for (const client of clients) {
+      try {
+        await client.navigate('./?stable=1');
+      } catch (error) {
+        client.postMessage({ type: 'FRONTSEAT_V2_RETIRED' });
+      }
+    }
+  })());
+});
+
+self.addEventListener('fetch', function (event) {
+  event.respondWith(fetch(event.request, { cache: 'no-store' }));
+});
