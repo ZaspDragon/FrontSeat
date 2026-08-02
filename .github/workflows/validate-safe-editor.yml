@@ -1,0 +1,31 @@
+name: Validate safe mobile editor
+on:
+  push:
+    branches: [feature/safe-mobile-editor]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check JavaScript syntax
+        run: |
+          node --check app.js
+          node --check commercial.js
+          node --check layout-editor.js
+          node --check layout-mobile-controls.js
+      - name: Verify stable runtime files
+        run: |
+          test -f index.html
+          test -f styles.css
+          test -f layout-editor.css
+          test -f layout-mobile-controls.css
+          grep -q 'app.js' index.html
+          grep -q 'layout-editor.js' index.html
+          grep -q 'layout-mobile-controls.js' index.html
+      - name: Reject known Safari parsing hazard
+        run: |
+          ! grep -R "0?.1" --include='*.js' .
+          ! grep -R "?.[0-9]" --include='*.js' .
