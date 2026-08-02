@@ -26,7 +26,8 @@ jobs:
           test -f v2/settings.js
           test -f v2/auth.js
           test -f v2/sync.js
-          grep -q 'type="module" src="v2/main.js"' index.html
+          grep -q "import('./v2/main.js?v='" index.html
+          grep -q 'FrontSeat startup timed out' index.html
       - name: Ensure no legacy runtime scripts load
         run: |
           ! grep -q 'commercial.js' index.html
