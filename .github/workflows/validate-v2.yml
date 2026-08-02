@@ -1,0 +1,35 @@
+name: Validate FrontSeat v2
+on:
+  push:
+    branches: [main, agent/frontseat-v2-rebuild]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check JavaScript syntax
+        run: |
+          find v2 -name '*.js' -print0 | xargs -0 -n1 node --check
+          node --check sw-v2.js
+      - name: Verify required modules
+        run: |
+          test -f v2/storage.js
+          test -f v2/store.js
+          test -f v2/floorplan.js
+          test -f v2/waitlist.js
+          test -f v2/reservations.js
+          test -f v2/seating.js
+          test -f v2/analytics.js
+          test -f v2/settings.js
+          test -f v2/auth.js
+          test -f v2/sync.js
+          grep -q "import('./v2/main.js?v='" index.html
+          grep -q 'FrontSeat startup timed out' index.html
+      - name: Ensure no legacy runtime scripts load
+        run: |
+          ! grep -q 'commercial.js' index.html
+          ! grep -q 'layout-editor.js' index.html
+          ! grep -q 'app.js' index.html

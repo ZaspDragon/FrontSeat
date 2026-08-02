@@ -1,0 +1,6 @@
+import{getDoc,setDoc}from'./storage.js';
+let timer=null;
+export async function getSyncConfig(){return getDoc('sync',{enabled:false,url:'',anonKey:'',restaurantId:''})}
+export async function saveSyncConfig(config){await setDoc('sync',config)}
+export async function syncNow(){const cfg=await getSyncConfig();if(!cfg.enabled||!cfg.url||!cfg.anonKey)return{status:'disabled'};const data=await getDoc('restaurant');const response=await fetch(`${cfg.url}/rest/v1/restaurants?id=eq.${encodeURIComponent(cfg.restaurantId)}`,{method:'PATCH',headers:{apikey:cfg.anonKey,Authorization:`Bearer ${cfg.anonKey}`,'Content-Type':'application/json',Prefer:'return=minimal'},body:JSON.stringify({frontseat_state:data,updated_at:new Date().toISOString()})});if(!response.ok)throw new Error(`Sync failed: ${response.status}`);await setDoc('last-sync',Date.now());return{status:'synced'}}
+export function startSync(onStatus=()=>{}){clearInterval(timer);const run=()=>{if(navigator.onLine)syncNow().then(onStatus).catch(e=>onStatus({status:'error',message:e.message}))};window.addEventListener('online',run);timer=setInterval(run,30000);run();return()=>clearInterval(timer)}
